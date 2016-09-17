@@ -17,10 +17,12 @@
   "require": {
     "php": ">=5.5.0",
     "nnx/module-options": "~0.1.0",
+    "webmozart/assert": "~1.1.0",
 
     "zendframework/zend-modulemanager": "~2.4.0",
     "zendframework/zend-eventmanager": "~2.4.0",
-    "zendframework/zend-stdlib": "~2.4.0"
+    "zendframework/zend-stdlib": "~2.4.0",
+    "zendframework/zend-form": "~2.4.0"
 
   },
   "require-dev": {
