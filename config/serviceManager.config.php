@@ -21,6 +21,9 @@ return [
         ],
         'abstract_factories' => [
 
+        ],
+        'shared' => [
+            ContextBuilder::class => false
         ]
     ],
 ];
