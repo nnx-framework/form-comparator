@@ -15,10 +15,15 @@ use Nnx\FormComparator\Context\Context;
 class FormComparator
 {
     /**
+     * @var Context
+     */
+    private $context;
+
+    /**
      * @param Context $context
      */
     public function compare(Context $context)
     {
-        
+        $this->context = $context;
     }
 }

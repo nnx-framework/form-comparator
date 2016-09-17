@@ -42,29 +42,44 @@ class ContextBuilder
      * Добавить информацию для сравнения форм, полученных в результате наложения информацию из двух разных объектов, на
      * заданную форму
      *
-     * @param $formName - имя формы (должна быть зарегестрирована в FormElementManager)
-     * @param $object1 - первая версия объекта данные из которого накладываются на фомру
-     * @param $object2 - вторая версия объекта данные из которого накладываются на фомру
+     * @param $formName     - имя формы (должна быть зарегестрирована в FormElementManager)
+     * @param $sourceObject - первая версия объекта данные из которого накладываются на фомру
+     * @param $targetObject - вторая версия объекта данные из которого накладываются на фомру
+     *
+     * @return $this
      */
-    public function addFormForCompare($formName, $object1, $object2)
+    public function addFormForCompare($formName, $sourceObject, $targetObject)
     {
         Assert::string($formName, 'Form name not string');
         Assert::notEmpty($formName, 'Form name is empty');
 
-        Assert::object($object1, 'Data for form(v1) not object');
-        Assert::object($object2, 'Data for form(v2) not object');
+        Assert::object($sourceObject, 'Data for form(v1) not object');
+        Assert::object($targetObject, 'Data for form(v2) not object');
 
-        /** @var FormInterface $form1 */
-        $form1 = $this->formElementManager->get($formName);
-        Assert::isInstanceOf($form1, FormInterface::class, sprintf('%s not implement %s', $formName, FormInterface::class));
+        /** @var FormInterface $sourceForm */
+        $sourceForm = $this->formElementManager->get($formName);
+        Assert::isInstanceOf($sourceForm, FormInterface::class, sprintf('%s not implement %s', $formName, FormInterface::class));
 
-        /** @var FormInterface $form2 */
-        $form2 = $this->formElementManager->get($formName);
+        /** @var FormInterface $targetForm */
+        $targetForm = $this->formElementManager->get($formName);
 
-        $form1->bind($object1);
-        $form2->bind($object2);
+        $sourceForm->bind($sourceObject);
+        $targetForm->bind($targetObject);
 
-        $this->comparableForm[] = new ComparableForm($form1, $form2);
+        $this->addComparableForm($sourceForm, $targetForm);
+
+        return $this;
+    }
+
+    /**
+     * Добавляет две формы для сравнения
+     *
+     * @param FormInterface $sourceForm
+     * @param FormInterface $targetForm
+     */
+    public function addComparableForm(FormInterface $sourceForm, FormInterface $targetForm)
+    {
+        $this->comparableForm[] = new ComparableForm($sourceForm, $targetForm);
     }
 
     /**
