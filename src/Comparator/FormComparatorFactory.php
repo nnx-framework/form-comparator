@@ -5,6 +5,8 @@
  */
 namespace Nnx\FormComparator\Comparator;
 
+use Webmozart\Assert\Assert;
+use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -21,10 +23,17 @@ class FormComparatorFactory implements FactoryInterface
      * @param ServiceLocatorInterface $serviceLocator
      *
      * @return FormComparator
+     * @throws \Zend\ServiceManager\Exception\ServiceNotFoundException
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new FormComparator();
+        $appServiceLocator = $serviceLocator instanceof AbstractPluginManager ? $serviceLocator->getServiceLocator() : $serviceLocator;
+
+        /** @var  FormDiffService $formDiffBuilder */
+        $formDiffBuilder = $appServiceLocator->get(FormDiffService::class);
+        Assert::isInstanceOf($formDiffBuilder, FormDiffService::class);
+
+        return new FormComparator($formDiffBuilder);
     }
 
 }

@@ -20,10 +20,39 @@ class FormComparator
     private $context;
 
     /**
+     * @var FormDiffService
+     */
+    private $formDiffBuilder;
+
+    /**
+     * FormComparator constructor.
+     *
+     * @param FormDiffService $formDiffBuilder
+     */
+    public function __construct(FormDiffService $formDiffBuilder)
+    {
+        $this->formDiffBuilder = $formDiffBuilder;
+    }
+
+
+    /**
      * @param Context $context
      */
     public function compare(Context $context)
     {
         $this->context = $context;
+
+        foreach ($this->context->getComparableForm() as $comparableForm) {
+            $diff = $this->formDiffBuilder->buildDiff($comparableForm->getSourceForm(), $comparableForm->getTargetForm());
+        }
+
+
+
+        
+        
+        
+        
+        
+        return;
     }
 }

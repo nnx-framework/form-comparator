@@ -28,4 +28,16 @@ class Context
     {
         $this->comparableForm = $builder->getComparableForm();
     }
+
+    /**
+     * Массив объектов, каждый из которых содержит информацию о том какие формы необходимо сравнивать
+     *
+     * @return ComparableForm[]
+     */
+    public function getComparableForm()
+    {
+        return $this->comparableForm;
+    }
+
+
 }

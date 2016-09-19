@@ -76,10 +76,14 @@ class ContextBuilder
      *
      * @param FormInterface $sourceForm
      * @param FormInterface $targetForm
+     *
+     * @return $this
      */
     public function addComparableForm(FormInterface $sourceForm, FormInterface $targetForm)
     {
         $this->comparableForm[] = new ComparableForm($sourceForm, $targetForm);
+
+        return $this;
     }
 
     /**
