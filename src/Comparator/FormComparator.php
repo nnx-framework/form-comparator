@@ -37,22 +37,23 @@ class FormComparator
 
     /**
      * @param Context $context
+     *
+     * @return AbstractDiff[]
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
+     * @throws \Nnx\FormComparator\Comparator\Exception\IncorrectElementTypeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\RuntimeException
      */
     public function compare(Context $context)
     {
         $this->context = $context;
 
+        $diff = [];
         foreach ($this->context->getComparableForm() as $comparableForm) {
-            $diff = $this->formDiffBuilder->buildDiff($comparableForm->getSourceForm(), $comparableForm->getTargetForm());
+            $formDiff = $this->formDiffBuilder->buildDiff($comparableForm->getSourceForm(), $comparableForm->getTargetForm());
+            $diff = array_merge($diff, $formDiff);
         }
 
-
-
-        
-        
-        
-        
-        
-        return;
+        return $diff;
     }
 }

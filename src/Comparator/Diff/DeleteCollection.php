@@ -13,7 +13,7 @@ use Zend\Form\Element\Collection;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class DeleteCollection extends AbstractDiffElement
+class DeleteCollection extends AbstractDiffElement implements DeletedElementInterface
 {
     /**
      * Удаленная коллекция
@@ -58,5 +58,27 @@ class DeleteCollection extends AbstractDiffElement
         $this->deletedCollection = $diffBuilder->getTargetElement();
 
         parent::__construct($diffBuilder);
+    }
+
+
+    /**
+     * Определяет является ли diff для коллекции или для элемента формы
+     *
+     * @return bool
+     */
+    public function isCollection()
+    {
+        return true;
+    }
+
+
+    /**
+     * Определяет какое действие было соверешенно с элементом (элемент был добавлен, изменен, удален)
+     *
+     * @return bool
+     */
+    public function getMode()
+    {
+        return self::DELETE;
     }
 }

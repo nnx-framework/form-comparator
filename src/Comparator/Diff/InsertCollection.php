@@ -14,7 +14,7 @@ use Zend\Form\Element\Collection;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class InsertCollection extends AbstractDiffElement
+class InsertCollection extends AbstractDiffElement implements InsertedElementInterface
 {
     /**
      * Добавленная коллекция
@@ -59,5 +59,27 @@ class InsertCollection extends AbstractDiffElement
         $this->insertedCollection = $diffBuilder->getTargetElement();
 
         parent::__construct($diffBuilder);
+    }
+
+
+    /**
+     * Определяет является ли diff для коллекции или для элемента формы
+     *
+     * @return bool
+     */
+    public function isCollection()
+    {
+        return true;
+    }
+
+
+    /**
+     * Определяет какое действие было соверешенно с элементом (элемент был добавлен, изменен, удален)
+     *
+     * @return bool
+     */
+    public function getMode()
+    {
+        return self::INSERT;
     }
 }

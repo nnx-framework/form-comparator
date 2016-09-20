@@ -17,6 +17,27 @@ use Zend\Form\FormInterface;
 abstract class AbstractDiffElement extends AbstractDiff
 {
     /**
+     * Элемент был удален
+     *
+     * @var string
+     */
+    const DELETE = 'delete';
+
+    /**
+     * Элемент был изменен
+     *
+     * @var string
+     */
+    const UPDATE = 'update';
+
+    /**
+     * Элемент был добавлен
+     *
+     * @var string
+     */
+    const INSERT = 'insert';
+
+    /**
      * Форма которую сравнивают
      *
      * @var FormInterface
@@ -109,4 +130,18 @@ abstract class AbstractDiffElement extends AbstractDiff
     {
         return $this->sourceLabel;
     }
+
+    /**
+     * Определяет является ли diff для коллекции или для элемента формы
+     *
+     * @return bool
+     */
+    abstract public function isCollection();
+
+    /**
+     * Определяет какое действие было соверешенно с элементом (элемент был добавлен, изменен, удален)
+     *
+     * @return string
+     */
+    abstract public function getMode();
 }

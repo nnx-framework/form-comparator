@@ -69,7 +69,8 @@ class Module implements
     {
         return array_merge_recursive(
             include __DIR__ . '/config/module.config.php',
-            include __DIR__ . '/config/serviceManager.config.php'
+            include __DIR__ . '/config/serviceManager.config.php',
+            include __DIR__ .'/config/viewManager.config.php'
         );
     }
 

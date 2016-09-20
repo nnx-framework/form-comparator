@@ -14,7 +14,7 @@ use Zend\Form\ElementInterface;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class UpdateElement extends AbstractDiffElement
+class UpdateElement extends AbstractDiffElement implements UpdatedElementInterface
 {
     /**
      * Старое значение
@@ -118,5 +118,26 @@ class UpdateElement extends AbstractDiffElement
         $this->targetValue = $targetValue;
 
         return $this;
+    }
+
+
+    /**
+     * Определяет является ли diff для коллекции или для элемента формы
+     *
+     * @return bool
+     */
+    public function isCollection()
+    {
+        return false;
+    }
+
+    /**
+     * Определяет какое действие было соверешенно с элементом (элемент был добавлен, изменен, удален)
+     *
+     * @return bool
+     */
+    public function getMode()
+    {
+        return self::UPDATE;
     }
 }

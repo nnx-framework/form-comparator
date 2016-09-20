@@ -1,0 +1,36 @@
+<?php /** @var \Zend\View\Renderer\PhpRenderer $this */ ?>
+
+<table>
+    <tbody>
+    <?php foreach ($this->diff as $diffElement): /** @var \Nnx\FormComparator\Comparator\Diff\AbstractDiffElement $diffElement */ ?>
+
+        <tr>
+            <td colspan="2"><?php echo $this->translate($diffElement->getSourceLabel()) ?></td>
+        </tr>
+        <tr>
+            <td>
+                <?php if (!$diffElement->isCollection() && 'update' === $diffElement->getMode()): ?>
+
+                <?php elseif ($diffElement instanceof \Nnx\FormComparator\Comparator\Diff\InsertedElementInterface): ?>
+                    <span>Отсутствовал</span>
+                <?php elseif ($diffElement instanceof \Nnx\FormComparator\Comparator\Diff\DeletedElementInterface): ?>
+
+                <?php endif; ?>
+            </td>
+            <td>
+                <?php if ($diffElement instanceof \Nnx\FormComparator\Comparator\Diff\UpdatedElementInterface): ?>
+
+                <?php elseif ($diffElement instanceof \Nnx\FormComparator\Comparator\Diff\InsertedElementInterface): ?>
+
+                <?php elseif ($diffElement instanceof \Nnx\FormComparator\Comparator\Diff\DeletedElementInterface): ?>
+                    <span>Удален</span>
+                <?php endif; ?>
+            </td>
+        </tr>
+
+    <?php endforeach; ?>
+    </tbody>
+</table>
+
+
+

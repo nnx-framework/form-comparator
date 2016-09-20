@@ -13,7 +13,7 @@ use Zend\Form\ElementInterface;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class InsertElement extends AbstractDiffElement
+class InsertElement extends AbstractDiffElement implements InsertedElementInterface
 {
     /**
      * Возвращает добавленный элемент
@@ -42,5 +42,25 @@ class InsertElement extends AbstractDiffElement
         $this->insertedElement = $diffBuilder->getTargetElement();
 
         parent::__construct($diffBuilder);
+    }
+
+    /**
+     * Определяет является ли diff для коллекции или для элемента формы
+     *
+     * @return bool
+     */
+    public function isCollection()
+    {
+        return false;
+    }
+
+    /**
+     * Определяет какое действие было соверешенно с элементом (элемент был добавлен, изменен, удален)
+     *
+     * @return bool
+     */
+    public function getMode()
+    {
+        return self::INSERT;
     }
 }
