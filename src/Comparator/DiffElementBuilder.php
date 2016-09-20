@@ -4,16 +4,18 @@
  * @author  Malofeykin Andrey  <and-rey2@yandex.ru>
  */
 namespace Nnx\FormComparator\Comparator;
+use Nnx\FormComparator\Comparator\Diff\AbstractCollectionElement;
 use Webmozart\Assert\Assert;
+use Zend\Form\Element\Collection;
 use Zend\Form\ElementInterface;
 use Zend\Form\FormInterface;
 
 /**
- * Class DiffBuilder
+ * Class DiffElementBuilder
  *
  * @package Nnx\FormComparator\Comparator
  */
-class DiffBuilder
+class DiffElementBuilder
 {
     /**
      * Элемент был создан
@@ -121,6 +123,18 @@ class DiffBuilder
     private $targetElement;
 
     /**
+     * @var AbstractCollectionElement[]
+     */
+    private $collectionElementsDiff;
+
+    /**
+     * Сервис для создания коллекции объектов описывающих разницу между коллекциями
+     *
+     * @var CollectionDiffService
+     */
+    private $collectionDiffService;
+
+    /**
      * Допустимые режимы
      *
      * @var array
@@ -129,6 +143,9 @@ class DiffBuilder
         self::DELETE_ELEMENT_MODE => self::DELETE_ELEMENT_MODE,
         self::UPDATE_ELEMENT_MODE => self::UPDATE_ELEMENT_MODE,
         self::INSERT_ELEMENT_MODE => self::INSERT_ELEMENT_MODE,
+        self::INSERT_COLLECTION_MODE => self::INSERT_COLLECTION_MODE,
+        self::UPDATE_COLLECTION_MODE => self::UPDATE_COLLECTION_MODE,
+        self::DELETE_COLLECTION_MODE => self::DELETE_COLLECTION_MODE,
     ];
 
     /**
@@ -149,6 +166,7 @@ class DiffBuilder
      */
     public function getSourceElement()
     {
+        Assert::isInstanceOf($this->sourceElement, ElementInterface::class);
         return $this->sourceElement;
     }
 
@@ -159,6 +177,7 @@ class DiffBuilder
      */
     public function getTargetElement()
     {
+        Assert::isInstanceOf($this->targetElement, ElementInterface::class);
         return $this->targetElement;
     }
 
@@ -169,7 +188,7 @@ class DiffBuilder
      *
      * @return $this
      */
-    public function setSourceElement($sourceElement)
+    public function setSourceElement(ElementInterface $sourceElement)
     {
         $this->sourceElement = $sourceElement;
 
@@ -183,7 +202,7 @@ class DiffBuilder
      *
      * @return $this
      */
-    public function setTargetElement($targetElement)
+    public function setTargetElement(ElementInterface $targetElement)
     {
         $this->targetElement = $targetElement;
 
@@ -197,6 +216,7 @@ class DiffBuilder
      */
     public function getSourceForm()
     {
+        Assert::isInstanceOf($this->targetForm, FormInterface::class);
         return $this->sourceForm;
     }
 
@@ -207,6 +227,7 @@ class DiffBuilder
      */
     public function getTargetForm()
     {
+        Assert::isInstanceOf($this->targetForm, FormInterface::class);
         return $this->targetForm;
     }
 
@@ -247,6 +268,8 @@ class DiffBuilder
      */
     public function getPathToElement()
     {
+        Assert::string($this->pathToElement);
+        Assert::notEmpty($this->pathToElement);
         return $this->pathToElement;
     }
 
@@ -340,20 +363,77 @@ class DiffBuilder
      * Создает объект описывающий различие между двумя элементами формы
      *
      * @return AbstractDiff
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     public function build()
     {
-        if (self::DELETE_ELEMENT_MODE === $this->mode) {
-            $diff = new Diff\DeleteElement($this);
-        } elseif (self::INSERT_ELEMENT_MODE === $this->mode) {
-            $diff = new Diff\InsertElement($this);
-        } else {
-            $diff = new Diff\UpdateElement($this);
+        switch ($this->mode) {
+            case self::DELETE_ELEMENT_MODE:
+                $diff = new Diff\DeleteElement($this);
+                break;
+            case self::INSERT_ELEMENT_MODE:
+                $diff = new Diff\InsertElement($this);
+                break;
+            case self::UPDATE_ELEMENT_MODE:
+                $diff = new Diff\UpdateElement($this);
+                break;
+            case self::UPDATE_COLLECTION_MODE:
+                $sourceCollection = $this->getSourceElement();
+                $targetCollection = $this->getTargetElement();
+                $prefixPath = $this->getPathToElement();
+                if ($sourceCollection instanceof Collection && $targetCollection instanceof Collection) {
+                    $this->collectionElementsDiff = $this->getCollectionDiffService()
+                        ->buildDiffUpdatedCollection($sourceCollection, $targetCollection, $prefixPath);
+                } else {
+                    throw new Exception\DomainException('Invalid collections');
+                }
+
+                $diff = new Diff\UpdateCollection($this);
+                break;
+            case self::INSERT_COLLECTION_MODE:
+                $sourceCollection = $this->getSourceElement();
+                $prefixPath = $this->getPathToElement();
+                if ($sourceCollection instanceof Collection) {
+                    $this->collectionElementsDiff = $this->getCollectionDiffService()
+                        ->buildDiffInsertedCollection($sourceCollection, $prefixPath);
+                } else {
+                    throw new Exception\DomainException('Invalid collections');
+                }
+
+                $diff = new Diff\InsertCollection($this);
+                break;
+            case self::DELETE_COLLECTION_MODE:
+                $sourceCollection = $this->getSourceElement();
+                $prefixPath = $this->getPathToElement();
+                if ($sourceCollection instanceof Collection) {
+                    $this->collectionElementsDiff = $this->getCollectionDiffService()
+                        ->buildDiffDeletedCollection($sourceCollection, $prefixPath);
+                } else {
+                    throw new Exception\DomainException('Invalid collections');
+                }
+
+                $diff = new Diff\DeleteCollection($this);
+                break;
+            default:
+                throw new Exception\DomainException(sprintf('Unknown mode %s', $this->mode));
+
         }
 
         return $diff;
     }
 
+    /**
+     * Возвращает объекты описывающие разницу между двумя коллекциями
+     *
+     * @return Diff\AbstractCollectionElement[]
+     */
+    public function getCollectionElementsDiff()
+    {
+        Assert::isArray($this->collectionElementsDiff);
+        return $this->collectionElementsDiff;
+    }
+    
     /**
      * Определяет какой объект создавать
      *
@@ -362,5 +442,18 @@ class DiffBuilder
     public function getMode()
     {
         return $this->mode;
+    }
+
+    /**
+     * Сервис для создания коллекции объектов описывающих разницу между коллекциями
+     *
+     * @return CollectionDiffService
+     */
+    protected function getCollectionDiffService()
+    {
+        if (null === $this->collectionDiffService) {
+            $this->collectionDiffService = new CollectionDiffService();
+        }
+        return $this->collectionDiffService;
     }
 }

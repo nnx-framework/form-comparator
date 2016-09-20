@@ -5,8 +5,8 @@
  */
 namespace Nnx\FormComparator\Comparator\Diff;
 
-use Nnx\FormComparator\Comparator\AbstractDiff;
-use Nnx\FormComparator\Comparator\DiffBuilder;
+
+use Nnx\FormComparator\Comparator\DiffElementBuilder;
 use Zend\Form\ElementInterface;
 
 /**
@@ -14,7 +14,7 @@ use Zend\Form\ElementInterface;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class UpdateElement extends AbstractDiff
+class UpdateElement extends AbstractDiffElement
 {
     /**
      * Старое значение
@@ -47,9 +47,9 @@ class UpdateElement extends AbstractDiff
     /**
      * UpdateElement constructor.
      *
-     * @param DiffBuilder $diffBuilder
+     * @param DiffElementBuilder $diffBuilder
      */
-    public function __construct(DiffBuilder $diffBuilder)
+    public function __construct(DiffElementBuilder $diffBuilder)
     {
         $this->sourceValue = $diffBuilder->getSourceValue();
         $this->targetValue = $diffBuilder->getTargetValue();

@@ -5,8 +5,8 @@
  */
 namespace Nnx\FormComparator\Comparator\Diff;
 
-use Nnx\FormComparator\Comparator\AbstractDiff;
-use Nnx\FormComparator\Comparator\DiffBuilder;
+
+use Nnx\FormComparator\Comparator\DiffElementBuilder;
 use Zend\Form\ElementInterface;
 
 /**
@@ -14,7 +14,7 @@ use Zend\Form\ElementInterface;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class DeleteElement extends AbstractDiff
+class DeleteElement extends AbstractDiffElement
 {
     /**
      * Удаленный элемент
@@ -36,11 +36,12 @@ class DeleteElement extends AbstractDiff
     /**
      * DeleteElement constructor.
      *
-     * @param DiffBuilder $diffBuilder
+     * @param DiffElementBuilder $diffBuilder
      */
-    public function __construct(DiffBuilder $diffBuilder)
+    public function __construct(DiffElementBuilder $diffBuilder)
     {
         $this->deletedElement = $diffBuilder->getSourceElement();
+
 
         parent::__construct($diffBuilder);
     }

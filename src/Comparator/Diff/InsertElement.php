@@ -5,8 +5,7 @@
  */
 namespace Nnx\FormComparator\Comparator\Diff;
 
-use Nnx\FormComparator\Comparator\AbstractDiff;
-use Nnx\FormComparator\Comparator\DiffBuilder;
+use Nnx\FormComparator\Comparator\DiffElementBuilder;
 use Zend\Form\ElementInterface;
 
 /**
@@ -14,7 +13,7 @@ use Zend\Form\ElementInterface;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class InsertElement extends AbstractDiff
+class InsertElement extends AbstractDiffElement
 {
     /**
      * Возвращает добавленный элемент
@@ -36,9 +35,9 @@ class InsertElement extends AbstractDiff
     /**
      * InsertElement constructor.
      *
-     * @param DiffBuilder $diffBuilder
+     * @param DiffElementBuilder $diffBuilder
      */
-    public function __construct(DiffBuilder $diffBuilder)
+    public function __construct(DiffElementBuilder $diffBuilder)
     {
         $this->insertedElement = $diffBuilder->getTargetElement();
 

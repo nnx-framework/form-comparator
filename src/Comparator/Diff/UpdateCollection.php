@@ -5,7 +5,7 @@
  */
 namespace Nnx\FormComparator\Comparator\Diff;
 
-use Nnx\FormComparator\Comparator\AbstractDiff;
+use Nnx\FormComparator\Comparator\DiffElementBuilder;
 use Zend\Form\Element\Collection;
 
 /**
@@ -13,7 +13,7 @@ use Zend\Form\Element\Collection;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class UpdateCollection extends AbstractDiff
+class UpdateCollection extends AbstractDiffElement
 {
     /**
      * Коллекция которую сравнивают
@@ -32,24 +32,23 @@ class UpdateCollection extends AbstractDiff
     /**
      * Расхождение между элементами коллекций
      *
-     * @var AbstractDiff[]
+     * @var AbstractCollectionElement[]
      */
     private $diff = [];
 
-//    /**
-//     * UpdateElement constructor.
-//     *
-//     * @param DiffBuilder $diffBuilder
-//     */
-//    public function __construct(DiffBuilder $diffBuilder)
-//    {
-//        $this->sourceValue = $diffBuilder->getSourceValue();
-//        $this->targetValue = $diffBuilder->getTargetValue();
-//        $this->sourceCollection = $diffBuilder->getSourceElement();
-//        $this->targetCollection = $diffBuilder->getTargetElement();
-//
-//        parent::__construct($diffBuilder);
-//    }
+    /**
+     * UpdateCollection constructor.
+     *
+     * @param DiffElementBuilder $diffBuilder
+     */
+    public function __construct(DiffElementBuilder $diffBuilder)
+    {
+        $this->sourceCollection = $diffBuilder->getSourceElement();
+        $this->targetCollection = $diffBuilder->getTargetElement();
+        $this->diff = $diffBuilder->getCollectionElementsDiff();
+
+        parent::__construct($diffBuilder);
+    }
 
     /**
      * Коллекция которую сравнивают
@@ -74,7 +73,7 @@ class UpdateCollection extends AbstractDiff
     /**
      * Расхождение между элементами коллекций
      *
-     * @return \Nnx\FormComparator\Comparator\AbstractDiff[]
+     * @return AbstractCollectionElement[]
      */
     public function getDiff()
     {

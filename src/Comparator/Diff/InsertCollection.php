@@ -5,8 +5,8 @@
  */
 namespace Nnx\FormComparator\Comparator\Diff;
 
-use Nnx\FormComparator\Comparator\AbstractDiff;
-use Nnx\FormComparator\Comparator\DiffBuilder;
+
+use Nnx\FormComparator\Comparator\DiffElementBuilder;
 use Zend\Form\Element\Collection;
 
 /**
@@ -14,7 +14,7 @@ use Zend\Form\Element\Collection;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class InsertCollection extends AbstractDiff
+class InsertCollection extends AbstractDiffElement
 {
     /**
      * Добавленная коллекция
@@ -28,16 +28,16 @@ class InsertCollection extends AbstractDiff
      *
      * @var InsertElement[]
      */
-    private $insertedElement = [];
+    private $insertedElements = [];
 
     /**
      * Возвращает элементы добавленной коллекции
      *
      * @return InsertElement[]
      */
-    public function getInsertedElement()
+    public function getInsertedElements()
     {
-        return $this->insertedElement;
+        return $this->insertedElements;
     }
     /**
      * Возвращает добавленную коллекцию (нет в форме которую сравнивают, но есть в форме с которой сравнивают)
@@ -52,9 +52,9 @@ class InsertCollection extends AbstractDiff
     /**
      * InsertElement constructor.
      *
-     * @param DiffBuilder $diffBuilder
+     * @param DiffElementBuilder $diffBuilder
      */
-    public function __construct(DiffBuilder $diffBuilder)
+    public function __construct(DiffElementBuilder $diffBuilder)
     {
         $this->insertedCollection = $diffBuilder->getTargetElement();
 

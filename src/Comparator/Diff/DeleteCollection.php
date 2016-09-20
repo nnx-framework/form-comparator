@@ -5,8 +5,7 @@
  */
 namespace Nnx\FormComparator\Comparator\Diff;
 
-use Nnx\FormComparator\Comparator\AbstractDiff;
-use Nnx\FormComparator\Comparator\DiffBuilder;
+use Nnx\FormComparator\Comparator\DiffElementBuilder;
 use Zend\Form\Element\Collection;
 
 /**
@@ -14,7 +13,7 @@ use Zend\Form\Element\Collection;
  *
  * @package Nnx\FormComparator\Comparator\Diff
  */
-class DeleteCollection extends AbstractDiff
+class DeleteCollection extends AbstractDiffElement
 {
     /**
      * Удаленная коллекция
@@ -28,16 +27,16 @@ class DeleteCollection extends AbstractDiff
      *
      * @var DeleteElement[]
      */
-    private $deletedElement = [];
+    private $deletedElements = [];
 
     /**
      * Возвращает элементы удаленной коллекции
      *
      * @return DeleteElement[]
      */
-    public function getDeletedElement()
+    public function getDeletedElements()
     {
-        return $this->deletedElement;
+        return $this->deletedElements;
     }
     /**
      * Возвращает удаленную коллекцию
@@ -52,9 +51,9 @@ class DeleteCollection extends AbstractDiff
     /**
      * InsertElement constructor.
      *
-     * @param DiffBuilder $diffBuilder
+     * @param DiffElementBuilder $diffBuilder
      */
-    public function __construct(DiffBuilder $diffBuilder)
+    public function __construct(DiffElementBuilder $diffBuilder)
     {
         $this->deletedCollection = $diffBuilder->getTargetElement();
 

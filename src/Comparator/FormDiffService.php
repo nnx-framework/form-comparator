@@ -48,6 +48,8 @@ class FormDiffService
      * @param FormInterface $targetForm
      *
      * @return array
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
      * @throws \Nnx\FormComparator\Comparator\Exception\RuntimeException
      * @throws \Nnx\FormComparator\Comparator\Exception\IncorrectElementTypeException
      */
@@ -87,6 +89,8 @@ class FormDiffService
      * @param FieldsetInterface $targetForm
      *
      * @return AbstractDiff[]
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
      * @throws \Nnx\FormComparator\Comparator\Exception\IncorrectElementTypeException
      */
     protected function runBuildDiffFieldset(FieldsetInterface $sourceForm, FieldsetInterface $targetForm)
@@ -138,6 +142,8 @@ class FormDiffService
      * @param                   $prefixPath
      *
      * @throws \Nnx\FormComparator\Comparator\Exception\IncorrectElementTypeException
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function buildDiffFieldset(FieldsetInterface $sourceFieldset, FieldsetInterface $targetFieldset, $prefixPath)
     {
@@ -162,10 +168,13 @@ class FormDiffService
     /**
      * @param ElementInterface $insertedElement
      * @param                  $prefixPath
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function createInsertedElementDiff(ElementInterface $insertedElement, $prefixPath)
     {
-        $builder = $this->diffBuilderFactory(DiffBuilder::INSERT_ELEMENT_MODE);
+        $builder = $this->diffBuilderFactory(DiffElementBuilder::INSERT_ELEMENT_MODE);
         $builder->setPathToElement($prefixPath)
             ->setTargetElement($insertedElement)
             ->setSourceLabel($insertedElement->getLabel());
@@ -180,6 +189,9 @@ class FormDiffService
      * @param ElementInterface $sourceElement
      * @param ElementInterface $targetElement
      * @param                  $prefixPath
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function buildDiffElementValue(ElementInterface $sourceElement, ElementInterface $targetElement, $prefixPath)
     {
@@ -190,7 +202,7 @@ class FormDiffService
         if ($sourceElementValue !== $targetElementValue) {
             $pathToElement = $this->buildPathToElementOrFieldset($sourceElement->getName(), $prefixPath);
 
-            $builder = $this->diffBuilderFactory(DiffBuilder::UPDATE_ELEMENT_MODE);
+            $builder = $this->diffBuilderFactory(DiffElementBuilder::UPDATE_ELEMENT_MODE);
 
             $builder->setPathToElement($pathToElement)
                 ->setSourceLabel($sourceElement->getLabel())
@@ -210,6 +222,8 @@ class FormDiffService
      * @param                   $prefixPath
      *
      * @throws \Nnx\FormComparator\Comparator\Exception\IncorrectElementTypeException
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function addNewElementInDiff(FieldsetInterface $sourceFieldset, FieldsetInterface $targetFieldset, $prefixPath)
     {
@@ -262,6 +276,9 @@ class FormDiffService
      *
      * @param FieldsetInterface $deletedFieldset
      * @param                   $prefixPath
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function markNestedElementsAsDeletedInFieldset(FieldsetInterface $deletedFieldset, $prefixPath)
     {
@@ -282,6 +299,9 @@ class FormDiffService
      *
      * @param FieldsetInterface $insertedFieldset
      * @param                   $prefixPath
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function markNestedElementsAsInsertedInFieldset(FieldsetInterface $insertedFieldset, $prefixPath)
     {
@@ -301,10 +321,13 @@ class FormDiffService
      *
      * @param ElementInterface $deletedElement
      * @param                  $pathToDeletedElement
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     public function createDeleteElementDiff(ElementInterface $deletedElement, $pathToDeletedElement)
     {
-        $builder = $this->diffBuilderFactory(DiffBuilder::DELETE_ELEMENT_MODE);
+        $builder = $this->diffBuilderFactory(DiffElementBuilder::DELETE_ELEMENT_MODE);
         $builder->setPathToElement($pathToDeletedElement)
             ->setSourceElement($deletedElement)
             ->setSourceLabel($deletedElement->getLabel());
@@ -337,11 +360,11 @@ class FormDiffService
      *
      * @param $mode
      *
-     * @return DiffBuilder
+     * @return DiffElementBuilder
      */
     protected function diffBuilderFactory($mode)
     {
-        $builder = new DiffBuilder($mode);
+        $builder = new DiffElementBuilder($mode);
         $builder->setSourceForm($this->sourceForm)
             ->setTargetForm($this->targetForm);
 
@@ -356,6 +379,8 @@ class FormDiffService
      * @param                  $prefixPath
      *
      * @throws \Nnx\FormComparator\Comparator\Exception\IncorrectElementTypeException
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function runDiffElementStrategy(ElementInterface $sourceElement, ElementInterface $targetElement, $prefixPath)
     {
@@ -363,13 +388,13 @@ class FormDiffService
 
         if ($sourceElement instanceof Collection && $targetElement instanceof Collection) {
 
-            $collectionDiffService = new CollectionDiffService();
-            $collectionDiffService->buildDiff($sourceElement, $targetElement, $prefixPath);
+            $builder = $this->diffBuilderFactory(DiffElementBuilder::UPDATE_COLLECTION_MODE);
+            $builder->setSourceElement($sourceElement)
+                ->setTargetElement($targetElement)
+                ->setSourceLabel($sourceElement->getLabel())
+                ->setPathToElement($prefixPath);
+            $this->diff[] = $builder->build();
 
-
-            $r = 1;
-
-            //@todo Реализовать сравнение двух коллекций
         } elseif ($sourceElement instanceof FieldsetInterface && $targetElement instanceof FieldsetInterface) {
             $this->buildDiffFieldset($sourceElement, $targetElement, $prefixPath);
         } else {
@@ -383,11 +408,18 @@ class FormDiffService
      *
      * @param ElementInterface $deletedElement
      * @param                  $prefixPath
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function runDeleteElementStrategy(ElementInterface $deletedElement, $prefixPath)
     {
         if ($deletedElement instanceof Collection) {
-            //@todo Реализовать добавление в коллекцию diff элементов, элемента описывающего удаленную коллекцию
+            $builder = $this->diffBuilderFactory(DiffElementBuilder::DELETE_COLLECTION_MODE);
+            $builder->setSourceElement($deletedElement)
+                ->setSourceLabel($deletedElement->getLabel())
+                ->setPathToElement($prefixPath);
+            $this->diff[] = $builder->build();
         } elseif ($deletedElement instanceof FieldsetInterface) {
             $this->markNestedElementsAsDeletedInFieldset($deletedElement, $prefixPath);
         } else {
@@ -402,11 +434,18 @@ class FormDiffService
      *
      * @param ElementInterface $insertedElement
      * @param                  $prefixPath
+     *
+     * @throws \Nnx\FormComparator\Comparator\CollectionDiffService\Exception\RuntimeException
+     * @throws \Nnx\FormComparator\Comparator\Exception\DomainException
      */
     protected function runInsertedElementStrategy(ElementInterface $insertedElement, $prefixPath)
     {
         if ($insertedElement instanceof Collection) {
-            //@todo Реализовать добавление в коллекцию diff элементов, элемента описывающего удаленную коллекцию
+            $builder = $this->diffBuilderFactory(DiffElementBuilder::INSERT_COLLECTION_MODE);
+            $builder->setSourceElement($insertedElement)
+                ->setSourceLabel($insertedElement->getLabel())
+                ->setPathToElement($prefixPath);
+            $this->diff[] = $builder->build();
         } elseif ($insertedElement instanceof FieldsetInterface) {
             $this->markNestedElementsAsInsertedInFieldset($insertedElement, $prefixPath);
         } else {
