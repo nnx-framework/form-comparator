@@ -4,9 +4,10 @@
  * @author  Malofeykin Andrey  <and-rey2@yandex.ru>
  */
 namespace Nnx\FormComparator\Comparator\CollectionDiffService;
+
+use Zend\Form\Element\Hidden;
 use Zend\Form\ElementInterface;
 use Zend\Form\FieldsetInterface;
-
 
 /**
  * Class HashElementBuilder
@@ -56,6 +57,9 @@ class HashElementBuilder
      */
     protected function buildHash(ElementInterface $element, $namePrefix = null)
     {
+        if ($element instanceof Hidden) {
+            return;
+        }
         if (null === $namePrefix) {
             $elementName = $element->getName();
         } else {
@@ -93,6 +97,4 @@ class HashElementBuilder
 
         return $value;
     }
-
-
 }
