@@ -6,6 +6,7 @@
 namespace Nnx\FormComparator\Comparator;
 
 
+use Nnx\FormComparator\Comparator\Diff\UpdateCollection;
 use Webmozart\Assert\Assert;
 use Zend\Form\Element\Collection;
 use Zend\Form\ElementInterface;
@@ -393,8 +394,11 @@ class FormDiffService
                 ->setTargetElement($targetElement)
                 ->setSourceLabel($sourceElement->getLabel())
                 ->setPathToElement($prefixPath);
-            $this->diff[] = $builder->build();
 
+            $diff = $builder->build();
+            if ($diff instanceof UpdateCollection && count($diff->getDiff()) !== 0) {
+                $this->diff[] = $builder->build();
+            }
         } elseif ($sourceElement instanceof FieldsetInterface && $targetElement instanceof FieldsetInterface) {
             $this->buildDiffFieldset($sourceElement, $targetElement, $prefixPath);
         } else {
